@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Dodger - The Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        .button { background: #28a745; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        .leaderboard { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Block Dodger!</h1>
+        <p>Dodge obstacles, buy power-ups, and reach the highest score!</p>
+        
+        <h2>Play Now</h2>
+        <canvas id="gameCanvas" width="500" height="600" style="border:1px solid black;"></canvas>
+        <script src="game.js"></script>
+        
+        <h2>Buy Power-Ups</h2>
+        <button class="button" onclick="buyPowerUp('life')">Buy Extra Life ($1.99)</button>
+        <button class="button" onclick="buyPowerUp('speed')">Buy Speed Boost ($1.99)</button>
+        <button class="button" onclick="buyPowerUp('invincible')">Buy Invincibility ($2.99)</button>
+        
+        <h2>Leaderboard</h2>
+        <div class="leaderboard" id="leaderboard"></div>
+    </div>
+
+    <script>
+        async function buyPowerUp(type) {
+            const response = await fetch('http://localhost:5000/create-checkout-session', { method: 'POST' });
+            const data = await response.json();
+            window.location.href = data.url;
+        }
+
+        async function loadLeaderboard() {
+            const response = await fetch('http://localhost:5000/leaderboard');
+            const data = await response.json();
+            document.getElementById('leaderboard').innerHTML = data.map(player => `<p>${player.name}: ${player.score}</p>`).join('');
+        }
+        loadLeaderboard();
+    </script>
+</body>
+</html>
